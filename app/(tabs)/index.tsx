@@ -1,52 +1,33 @@
-import { useSessionStore } from "@/hooks/useSessionStore";
-import { initDb } from "@/lib/db";
-import { Link } from "expo-router";
-import { useEffect } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const PRESETS = [30_000, 60_000, 90_000, 120_000, 150_000, 180_000];
+import { useRouter } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
-  const setTargetPost = useSessionStore((s) => s.setTargetPost);
-
-  useEffect(() => {
-    initDb();
-  }, []);
+  const router = useRouter();
 
   return (
-    <View style={s.c}>
-      <Text style={s.h1}>STA Post-Contraction Timer</Text>
-      <Text style={s.sub}>Выбери цель «после контракций», затем открой Session</Text>
-      <FlatList
-        data={PRESETS}
-        keyExtractor={(v) => String(v)}
-        numColumns={3}
-        columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 12 }}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={s.preset} onPress={() => setTargetPost(item)}>
-            <Text style={s.presetText}>
-              +{Math.floor(item / 60000)}:{String(Math.floor(item / 1000) % 60).padStart(2, "0")}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-      <Link href="/(tabs)/session" style={{ marginTop: 12, color: "#1e40af", fontWeight: "700" }}>
-        Перейти к Session →
-      </Link>
+    <View style={styles.container}>
+      <Text style={styles.logo}>🌊</Text>
+      <Text style={styles.title}>Apnea Trainer</Text>
+      <Text style={styles.subtitle}>Выберите тип тренировки</Text>
+
+      <Pressable
+        style={[styles.btn, styles.btnPrimary]}
+        // ВАЖНО: идем на таб "square", НЕ "session"
+        onPress={() => router.push("/(tabs)/square")}
+      >
+        <Text style={styles.btnText}>Square Breathing</Text>
+      </Pressable>
     </View>
   );
 }
-const s = StyleSheet.create({
-  c: { flex: 1, padding: 16 },
-  h1: { fontSize: 22, fontWeight: "800", marginBottom: 8 },
-  sub: { opacity: 0.7, marginBottom: 16 },
-  preset: {
-    backgroundColor: "#eee",
-    padding: 18,
-    borderRadius: 12,
-    alignItems: "center",
-    flex: 1,
-    marginHorizontal: 6,
-  },
-  presetText: { fontSize: 18, fontWeight: "700" },
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24, backgroundColor: "#fff" },
+  logo: { fontSize: 40, marginBottom: 6 },
+  title: { fontSize: 22, fontWeight: "700", marginBottom: 6 },
+  subtitle: { fontSize: 14, color: "#6b7280", marginBottom: 24 },
+  btn: { paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12, minWidth: 220, alignItems: "center" },
+  btnPrimary: { backgroundColor: "#2563eb" },
+  btnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
 });
